@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
-let databaseName = "GroMart";
+
+let isDev = false;
+
 mongoose
-  .connect(`${process.env.MONGODB_URI}`, {
+  .connect(`${isDev ? process.env.LOCAL_URI : process.env.MONGODB_URI}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

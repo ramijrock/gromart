@@ -9,25 +9,21 @@ exports.register = async (req, res) => {
     }
 
     try {
-        const emailExist = await User.findOne({
-            email: req.body.email
-        });
 
+        const emailExist = await User.findOne({email: email});
         if (emailExist) {
             return res.status(400).json({
-              message: "Email already exists",
-              success: false
+            message: "Email already exists",
+            success: false
             });
         }
 
-        const mobileExist = await User.findOne({
-            mobile: req.body.mobile
-        });
+        const mobileExist = await User.findOne({mobile: mobile});
 
         if (mobileExist) {
             return res.status(400).json({
-              message: "Mobile already exists",
-              success: false
+            message: "Mobile already exists",
+            success: false
             });
         }
 
@@ -52,6 +48,10 @@ exports.register = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        console.log('error', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Server error' 
+        });
     }
 }
