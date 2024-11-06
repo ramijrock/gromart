@@ -10,9 +10,11 @@ app.use(cors())
 
 // All routes import here
 const authRoutes = require("./src/routes/auth");
+const kycRouts = require("./src/routes/kyc");
 
 // All routes import here
 app.use('/api/auth', authRoutes);
+app.use('/api/kyc', kycRouts);
 
 // Base route use here
 app.get('/', (req, res) => {
