@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-let isDev = false;
+let isDev = true;
 
 mongoose
   .connect(`${isDev ? process.env.LOCAL_URI : process.env.MONGODB_URI}`, {
