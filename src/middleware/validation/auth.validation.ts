@@ -1,5 +1,4 @@
-import { NextFunction, Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { body } from "express-validator";
 
 
 export const validateSignup = [
