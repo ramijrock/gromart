@@ -6,6 +6,9 @@ import connectDB from "./config/db";
 import bodyParser = require("body-parser");
 import cors from "cors";
 
+// Route import here
+import authRoute from "./routes/auth.routes";
+
 // Connect to MongoDB Database with better error handling
 connectDB()
     .catch(err => {
@@ -26,6 +29,9 @@ app.use(
         extended: true, // Allows parsing of rich data structures
     })
 );
+
+// All route use here
+app.use("/auth", authRoute);
 
 // Default route
 app.get("/", (req: Request, res: Response) => {
