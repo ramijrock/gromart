@@ -47,7 +47,7 @@ export const logIn = async (req: Request, res: Response, next: NextFunction): Pr
     try {
         const { email, password } = req.body;
 
-        const userData = await User.findOne({email});
+        const userData = await User.findOne({ email });
         if (!userData) {
             res.status(400).json({
                 message: "No user found",
@@ -70,14 +70,55 @@ export const logIn = async (req: Request, res: Response, next: NextFunction): Pr
         }, process.env.JWT_SECRET!);
 
         const userDataWithoutPassword = userData.toObject();
-        const {password: _, ...userWithoutPassword} = userDataWithoutPassword;
-        
+        const { password: _, ...userWithoutPassword } = userDataWithoutPassword;
+
         res.header("auth-token", token).status(200).json({
             success: true,
             message: "Successfully login",
             user: userWithoutPassword,
             token: token
-          });
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export const allUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const query = req.query.q || "";
+        const page = Math.max(1, parseInt(req.query.page as string) || 1);
+        const limit = Math.max(1, parseInt(req.query.limit as string) || 5);
+        const skip = (page - 1) * limit;
+
+        // Define filters
+        const searchCriteria = {
+            $and: [
+                {
+                    $or: [
+                        { name: { $regex: query, $options: "i" } }, // Case-insensitive match
+                        { email: { $regex: query, $options: "i" } },
+                    ],
+                },
+                // { role: "customer" },
+            ],
+        };
+
+        // Fetch user count
+        const totalUsers = await User.countDocuments(searchCriteria);
+
+        // Fetch paginated users
+        const users: IUser[] = await User.find(searchCriteria)
+            .skip(skip)
+            .limit(limit);
+
+        // Send response
+        res.status(200).json({
+            message: "Customer list fetched successfully!",
+            data: users,
+            total_count: totalUsers,
+            page,
+        });
     } catch (error) {
         next(error);
     }
