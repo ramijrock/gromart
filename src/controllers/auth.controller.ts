@@ -24,19 +24,21 @@ export const signUp = async (
             email,
             mobile,
             password: hashedPassword,
-            role: role ?? "Customer",
+            role: role ?? "customer",
         });
 
-        await newUser.save();
+        const savedUser = await newUser.save();
 
         res.status(201).json({
+            success: true,
             message: "Signup successful",
-            user: {
-                id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                role: newUser.role,
-            },
+            // user: {
+            //     id: newUser._id,
+            //     name: newUser.name,
+            //     email: newUser.email,
+            //     role: newUser.role,
+            // },
+            user: savedUser
         });
     } catch (error) {
         next(error);

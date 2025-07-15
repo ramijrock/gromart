@@ -19,7 +19,11 @@ export const validateSignup = [
         .matches(/^[0-9]{10}$/)
         .withMessage('Please enter a valid 10-digit mobile number'),
     body('password')
+        .trim()
+        .not()
+        .isEmpty()
+        .withMessage('Password is required!')
         .isLength({ min: 8 })
-        .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/)
-        .withMessage('Password must be at least 8 characters long and contain uppercase, lowercase, number and special character'),
+        .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
+        .withMessage('Password must be at least 8 characters long and contain uppercase, lowercase, and a number'),
 ];
