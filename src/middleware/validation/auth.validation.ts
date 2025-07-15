@@ -27,3 +27,12 @@ export const validateSignup = [
         .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/)
         .withMessage('Password must be at least 8 characters long and contain uppercase, lowercase, and a number'),
 ];
+
+export const validateSignIn = [
+    body('email').trim().isEmail().withMessage('Email is required!'),
+    body('password')
+      .trim()
+      .not()
+      .isEmpty()
+      .withMessage('Password is required!'),
+  ];

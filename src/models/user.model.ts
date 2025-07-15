@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IUser extends Document {
   name: string;
   email: string;
-  mobile: number;
+  mobile: string;
   password: string;
   isactive?: boolean;
   termsandcondition?: boolean;
@@ -22,7 +22,7 @@ const userSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true },
-    mobile: { type: Number, required: true },
+    mobile: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isactive: { type: Boolean, default: true },
     termsandcondition: { type: Boolean, default: true },
