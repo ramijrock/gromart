@@ -5,7 +5,6 @@ import { IUser } from "../models/user.model";
 export const authorizeRoles = (allowedRoles: Array<IUser["role"]>) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const user = req.user as IUser; // Extract user from the request object
-    console.log("user========>", user);
     // If no user is found, return unauthorized
     if (!user) {
       res.status(401).json({
