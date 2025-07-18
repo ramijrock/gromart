@@ -8,6 +8,7 @@ import cors from "cors";
 
 // Route import here
 import authRoute from "./routes/auth.routes";
+import bannerRoute from "./routes/banner.routes";
 
 // Connect to MongoDB Database with better error handling
 connectDB()
@@ -35,6 +36,7 @@ app.use(
 
 // All route use here
 app.use("/auth", authRoute);
+app.use("/banner", bannerRoute);
 
 // Default route
 app.get("/", (req: Request, res: Response) => {
