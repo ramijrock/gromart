@@ -1,3 +1,12 @@
+import { IUser } from "../models/user.model";
+import "express";
+
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: IUser;
+  }
+}
+
 declare module 'bcryptjs' {
   export function hash(data: string, saltOrRounds: string | number): Promise<string>;
   export function hashSync(data: string, saltOrRounds: string | number): string;

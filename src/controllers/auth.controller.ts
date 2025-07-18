@@ -73,7 +73,9 @@ export const logIn = async (req: Request, res: Response, next: NextFunction): Pr
         }
 
         const token = jwt.sign({
-            _id: userData._id
+            _id: userData._id,
+            role: userData.role,
+            email: userData.email
         }, process.env.JWT_SECRET!);
 
         const userDataWithoutPassword = userData.toObject();
