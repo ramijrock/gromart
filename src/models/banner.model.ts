@@ -6,6 +6,7 @@ export interface IBanner extends Document {
   image: string;
   link?: string;
   deviceType: 'web' | 'mobile';
+  description: string;
   isactive: boolean;
   vendor: mongoose.Types.ObjectId; // Reference to User (vendor)
   startDate: Date;
@@ -19,6 +20,7 @@ const BannerSchema: Schema = new Schema({
   title: { type: String },
   image: { type: String},
   link: { type: String },
+  description: { type: String, trim: true },
   deviceType: { type: String, enum: ['web', 'mobile']},
   isactive: { type: Boolean, default: true },
   vendorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },

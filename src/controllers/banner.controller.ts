@@ -11,7 +11,7 @@ export const addBanner = async (
 ): Promise<void> => {
   try {
     // Extract fields from request
-    const { title, link, deviceType, startDate, endDate } = req.body;
+    const { title, link, deviceType, description, startDate, endDate } = req.body;
     const file = req.file;
     const user = (req as any).user; // JWT payload
 
@@ -30,6 +30,7 @@ export const addBanner = async (
       image: file.path, // Use Cloudinary URL
       link,
       deviceType,
+      description: description?.trim(),
       isactive: true,
       vendorId: new mongoose.Types.ObjectId(String(user._id)),
       startDate: startDate ? new Date(startDate) : undefined,
@@ -53,7 +54,7 @@ export const updateBanner = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { id, title, link, deviceType, startDate, endDate } = req.body;
+    const { id, title, link, deviceType, description, startDate, endDate } = req.body;
     const file = req.file;
 
     // Check for validation errors
@@ -70,6 +71,7 @@ export const updateBanner = async (
     const updateData: Record<string, any> = {
       title: title.trim(),
       link: link?.trim(),
+      description: description?.trim(),
       startDate: startDate ? new Date(startDate) : undefined,
       endDate: endDate ? new Date(endDate) : undefined,
       deviceType: deviceType.trim(),

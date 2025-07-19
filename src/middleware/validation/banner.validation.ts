@@ -9,6 +9,11 @@ export const validateAddBanner = [
         .trim()
         .isEmpty()
         .withMessage('Link is required!'),
+    body('description')
+        .optional()
+        .trim()
+        .isLength({ max: 500 })
+        .withMessage('Description must be less than 500 characters'),
     body('deviceType')
         .trim()
         .isEmpty()
