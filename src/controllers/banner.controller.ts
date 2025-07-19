@@ -8,10 +8,9 @@ export const addBanner = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  console.log("called");
   try {
     // Extract fields from request
-    const { title, link, deviceType, isactive } = req.body;
+    const { title, link, deviceType, isactive, startDate, endDate } = req.body;
     const file = req.file;
     const user = (req as any).user; // JWT payload
 
@@ -31,7 +30,9 @@ export const addBanner = async (
       link,
       deviceType,
       isactive: isactive !== undefined ? isactive : true,
-      vendorId: new mongoose.Types.ObjectId(user._id),
+      vendorId: new mongoose.Types.ObjectId(String(user._id)),
+      startDate,
+      endDate,
     });
 
     res.status(201).json({
@@ -45,5 +46,71 @@ export const addBanner = async (
   }
 };
 
+export const getBannerList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const titleSearch = req.query.q?.toString().trim() || "";
+    const sectionFilter = req.query.section?.toString().trim() || "";
+    const deviceType = req.query.deviceType?.toString().trim();
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(Math.max(1, parseInt(req.query.limit as string) || 10), 50); // Max 50 items per page
+    const skip = (page - 1) * limit;
 
+    // Build search criteria with sanitized inputs
+    const now = new Date();
+    const searchCriteria: any = {
+      isactive: true,
+      startDate: { $lte: now },
+      endDate: { $gte: now }
+    };
+
+    if (deviceType) {
+      searchCriteria.deviceType = deviceType;
+    }
+
+    // Add search conditions if provided
+    if (titleSearch || sectionFilter) {
+      searchCriteria.$and = [];
+      
+      if (titleSearch) {
+        searchCriteria.$and.push({ 
+          title: { $regex: titleSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), $options: "i" } 
+        });
+      }
+      
+      if (sectionFilter) {
+        searchCriteria.$and.push({ 
+          section: { $regex: sectionFilter.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), $options: "i" } 
+        });
+      }
+    }
+
+    const [bannerList, totalBanner] = await Promise.all([
+      Banner.find(searchCriteria)
+        .sort({ displayOrder: 1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Banner.countDocuments(searchCriteria)
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Banner list fetch successfully",
+      data: {
+        banners: bannerList,
+        pagination: {
+          total: totalBanner,
+          page,
+          limit,
+          pages: Math.ceil(totalBanner / limit)
+        }
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 

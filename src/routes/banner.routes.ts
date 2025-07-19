@@ -1,18 +1,21 @@
 import { Router } from "express";
 import { authenticateJWT } from "../middleware/authenticateJWT";
-import { addBanner } from "../controllers/banner.controller";
+import { addBanner, getBannerList } from "../controllers/banner.controller";
 import { authorizeRoles } from "../middleware/authorizeRoles";
 import cloudinaryMulter from "../middleware/cloudinaryMulter";
-import { validateAddBanner } from "../middleware/validation/banner.validation";
+import { validateAddBanner, validateListQuery } from "../middleware/validation/banner.validation";
 import { validateRequest } from "../middleware/validate.request";
 
 const router = Router();
+
+// Public routes
+router.get("/banner-list", validateListQuery, getBannerList);
 
 // Protected routes (require authentication)
 router.post(
   "/add-banner",
   authenticateJWT,
-  authorizeRoles(["vendor"]),
+  authorizeRoles(["vendor", "admin"]),
   validateAddBanner,
   validateRequest,
   cloudinaryMulter.single("image"),
