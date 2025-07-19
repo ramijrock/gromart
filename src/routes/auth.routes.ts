@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { validateRequest } from "../middleware/validate.request";
 import { validateSignIn, validateSignup } from "../middleware/validation/auth.validation";
-import { allUsers, logIn, signUp } from "../controllers/auth.controller";
+import { allUsers, currentUser, logIn, signUp } from "../controllers/auth.controller";
+import { authenticateJWT } from "../middleware/authenticateJWT";
 
 const router = Router();
 
@@ -18,5 +19,8 @@ router.post("/login",
 );
 
 router.get("/all-users", allUsers);
+
+// Get details of the currently logged-in user
+router.get("/current-user", authenticateJWT, currentUser);
 
 export default router;

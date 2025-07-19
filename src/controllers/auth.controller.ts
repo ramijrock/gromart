@@ -37,12 +37,6 @@ export const signUp = async (
         res.status(201).json({
             success: true,
             message: "Signup successful",
-            // user: {
-            //     id: newUser._id,
-            //     name: newUser.name,
-            //     email: newUser.email,
-            //     role: newUser.role,
-            // },
             user: savedUser
         });
     } catch (error) {
@@ -132,3 +126,27 @@ export const allUsers = async (req: Request, res: Response, next: NextFunction):
         next(error);
     }
 }
+
+// Current User Controller
+export const currentUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const user = (req as any).user as IUser;
+      if (!user) {
+        res.status(401).json({ message: "Non-auth user" });
+        return;
+      }
+
+      const userData = await User.findOne({_id: user._id});
+      res.status(200).json({
+        message: "Current user fetched successfully!",
+        user: userData
+      });
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+      next(error);
+    }
+  };
