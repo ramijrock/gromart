@@ -10,7 +10,7 @@ export const addBanner = async (
 ): Promise<void> => {
   try {
     // Extract fields from request
-    const { title, link, deviceType, isactive, startDate, endDate } = req.body;
+    const { title, link, deviceType, startDate, endDate } = req.body;
     const file = req.file;
     const user = (req as any).user; // JWT payload
 
@@ -29,10 +29,10 @@ export const addBanner = async (
       image: file.path, // Use Cloudinary URL
       link,
       deviceType,
-      isactive: isactive !== undefined ? isactive : true,
+      isactive: true,
       vendorId: new mongoose.Types.ObjectId(String(user._id)),
-      startDate,
-      endDate,
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
     });
 
     res.status(201).json({
@@ -74,16 +74,16 @@ export const getBannerList = async (
     // Add search conditions if provided
     if (titleSearch || sectionFilter) {
       searchCriteria.$and = [];
-      
+
       if (titleSearch) {
-        searchCriteria.$and.push({ 
-          title: { $regex: titleSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), $options: "i" } 
+        searchCriteria.$and.push({
+          title: { $regex: titleSearch.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), $options: "i" }
         });
       }
-      
+
       if (sectionFilter) {
-        searchCriteria.$and.push({ 
-          section: { $regex: sectionFilter.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), $options: "i" } 
+        searchCriteria.$and.push({
+          section: { $regex: sectionFilter.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), $options: "i" }
         });
       }
     }
