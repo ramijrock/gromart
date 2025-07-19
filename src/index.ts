@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
 dotenv.config(); // Load environment variables from .env file
 
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import connectDB from "./config/db";
 import bodyParser = require("body-parser");
 import cors from "cors";
+import path from "path";
 
 // Route import here
 import authRoute from "./routes/auth.routes";
@@ -34,6 +35,34 @@ app.use(
     })
 );
 
+// Serve uploads folder as static
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  // Log the full error object
+  console.error("Error:", typeof err === "object" ? JSON.stringify(err, null, 2) : err);
+
+  // Extract a readable message
+  let message = "Internal Server Error";
+  if (err) {
+    if (typeof err === "string") {
+      message = err;
+    } else if (err.message) {
+      message = err.message;
+    } else if (err.error && err.error.message) {
+      message = err.error.message;
+    } else {
+      message = JSON.stringify(err);
+    }
+  }
+
+  res.status(err.status || 500).json({
+    success: false,
+    message,
+    // error: process.env.NODE_ENV === "development" ? err : undefined,
+  });
+});
+
 // All route use here
 app.use("/auth", authRoute);
 app.use("/banner", bannerRoute);
@@ -47,7 +76,7 @@ app.get("/", (req: Request, res: Response) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 }).on('error', (err) => {
-    console.error('Server failed to start:', err);
+    console.error('Server failed to start:', typeof err === 'object' ? JSON.stringify(err, null, 2) : err);
     process.exit(1);
 });
 

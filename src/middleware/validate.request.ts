@@ -5,6 +5,7 @@ export const validateRequest = (req: Request, res: Response, next: NextFunction)
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const firstError = errors.array()[0];
+    console.log("first error======>", firstError);
     res.status(400).json({
       message: firstError.msg
     });

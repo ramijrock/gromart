@@ -14,12 +14,12 @@ export interface IBanner extends Document {
 
 // Define the Banner schema
 const BannerSchema: Schema = new Schema({
-  title: { type: String, required: true },
-  image: { type: String, required: true },
+  title: { type: String },
+  image: { type: String},
   link: { type: String },
-  deviceType: { type: String, enum: ['web', 'mobile'], required: true },
+  deviceType: { type: String, enum: ['web', 'mobile']},
   isactive: { type: Boolean, default: true },
-  vendor: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  vendorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 }, {
   timestamps: true,
   versionKey: false

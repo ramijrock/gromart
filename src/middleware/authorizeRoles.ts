@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { IUser } from "../models/user.model";
+import { AuthenticatedRequest } from "./authenticateJWT";
 
 // Middleware to restrict access based on roles
 export const authorizeRoles = (allowedRoles: Array<IUser["role"]>) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     const user = req.user as IUser; // Extract user from the request object
     // If no user is found, return unauthorized
     if (!user) {
