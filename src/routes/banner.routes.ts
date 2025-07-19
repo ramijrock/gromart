@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authenticateJWT } from "../middleware/authenticateJWT";
-import { addBanner, getBannerList, updateBanner } from "../controllers/banner.controller";
+import { addBanner, getBannerList, updateBanner, deleteBanner } from "../controllers/banner.controller";
 import { authorizeRoles } from "../middleware/authorizeRoles";
 import cloudinaryMulter from "../middleware/cloudinaryMulter";
 import { validateAddBanner, validateListQuery } from "../middleware/validation/banner.validation";
@@ -40,6 +40,13 @@ router.patch(
   validateRequest,
   cloudinaryMulter.single("image"),
   updateBanner
+);
+
+router.delete(
+  "/delete-banner/:id",
+  authenticateJWT,
+  authorizeRoles(["vendor", "admin"]),
+  deleteBanner
 );
 
 

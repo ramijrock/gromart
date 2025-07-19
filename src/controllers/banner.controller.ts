@@ -178,3 +178,42 @@ export const getBannerList = async (
   }
 }
 
+export const deleteBanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void>=> {
+  try {
+    const { id } = req.params;
+    
+    // Use soft delete by updating isActive flag
+    const deletedBanner = await Banner.findByIdAndUpdate(
+      id,
+      { 
+        $set: { 
+          isactive: false,
+          updatedAt: new Date()
+        } 
+      },
+      { new: true }
+    );
+
+    if (!deletedBanner) {
+      res.status(404).json({
+        success: false,
+        message: "Banner not found."
+      });
+      return;
+    }
+
+
+    res.status(200).json({
+      success: true,
+      message: "Banner deleted successfully",
+      data: deletedBanner
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
