@@ -3,7 +3,7 @@ dotenv.config(); // Load environment variables from .env file
 
 import express, { NextFunction, Request, Response } from "express";
 import connectDB from "./config/db";
-import bodyParser = require("body-parser");
+import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
 
