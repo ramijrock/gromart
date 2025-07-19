@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Banner from "../models/banner.model";
 import mongoose from "mongoose";
+import { validationResult } from "express-validator";
 
 // Add Banner Controller
 export const addBanner = async (
@@ -42,6 +43,69 @@ export const addBanner = async (
     });
   } catch (error) {
     console.error("Error adding banner:", error);
+    next(error);
+  }
+};
+
+export const updateBanner = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id, title, link, deviceType, startDate, endDate } = req.body;
+    const file = req.file;
+
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ 
+        success: false,
+        errors: errors.array() 
+      });
+      return;
+    }
+
+    // Prepare the update object with sanitized data
+    const updateData: Record<string, any> = {
+      title: title.trim(),
+      link: link?.trim(),
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+      deviceType: deviceType.trim(),
+      updatedAt: new Date()
+    };
+
+    // Add imageUrl only if a new file is uploaded
+    if (req.file) {
+      updateData.image = file;
+    }
+
+    // Update the banner in the database
+    const updatedBanner = await Banner.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { 
+        new: true,
+        runValidators: true,
+        context: 'query'
+      }
+    );
+
+    if (!updatedBanner) {
+      res.status(404).json({ 
+        success: false,
+        message: "Banner not found." 
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Banner updated successfully.",
+      banner: updatedBanner,
+    });
+  } catch (error) {
     next(error);
   }
 };
