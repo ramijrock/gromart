@@ -5,6 +5,7 @@ import { authorizeRoles } from "../middleware/authorizeRoles";
 import cloudinaryMulter from "../middleware/cloudinaryMulter";
 import { validateAddBanner, validateListQuery } from "../middleware/validation/banner.validation";
 import { validateRequest } from "../middleware/validate.request";
+import getCloudinaryMulter from "../middleware/cloudinaryMulter";
 
 const router = Router();
 
@@ -18,7 +19,7 @@ router.post(
   authorizeRoles(["vendor", "admin"]),
   validateAddBanner,
   validateRequest,
-  cloudinaryMulter.single("image"),
+  getCloudinaryMulter("banners").single("image"),
   // (req, res, next) => {
   //   cloudinaryMulter.single("image")(req, res, function (err) {
   //     if (err) {
@@ -38,7 +39,7 @@ router.patch(
   authorizeRoles(["vendor", "admin"]),
   validateAddBanner,
   validateRequest,
-  cloudinaryMulter.single("image"),
+  getCloudinaryMulter("banners").single("image"),
   updateBanner
 );
 

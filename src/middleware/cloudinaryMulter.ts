@@ -2,15 +2,15 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 import cloudinary from '../config/cloudinary';
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: () => ({
-    folder: 'banners',
-    // No 'format' property to allow all formats
-    transformation: [{ width: 1200, height: 400, crop: 'limit' }],
-  }),
-});
+function getCloudinaryMulter(folder: string) {
+  const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: () => ({
+      folder,
+      transformation: [{ width: 1200, height: 400, crop: 'limit' }],
+    }),
+  });
+  return multer({ storage });
+} 
 
-const cloudinaryMulter = multer({ storage });
-
-export default cloudinaryMulter; 
+export default getCloudinaryMulter;
