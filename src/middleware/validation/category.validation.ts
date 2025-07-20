@@ -3,7 +3,7 @@ import { body, query } from "express-validator";
 export const validateCategory = [
     body('categoryName')
         .trim()
-        .notEmpty()
+        .isEmpty()
         .withMessage('Category name is required!'),
     
     body('description')
