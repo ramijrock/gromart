@@ -26,7 +26,7 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
     }
 
     // Check if category name already exists
-    const existingCategory = await Category.findOne({ 
+    const existingCategory = await Category.findOne({
       categoryName: { $regex: new RegExp(`^${categoryName}$`, 'i') },
       vendor: user?.role === 'vendor' ? user._id : null
     });
@@ -82,222 +82,215 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
 };
 
 // Get all categories (with filtering)
-// export const getCategories = async (req: Request, res: Response) => {
-//   try {
-//     const {
-//       page = 1,
-//       limit = 10,
-//       search,
-//       parentCategory,
-//       isGlobal,
-//       vendor
-//     } = req.query;
+export const getCategories = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      parentCategory,
+      isGlobal,
+      vendor
+    } = req.query;
 
-//     const skip = (Number(page) - 1) * Number(limit);
-    
-//     // Build filter object
-//     const filter: any = { isactive: true };
+    const user = (req as any)?.user;
 
-//     // Add search filter
-//     if (search) {
-//       filter.categoryname = { $regex: search, $options: 'i' };
-//     }
+    const skip = (Number(page) - 1) * Number(limit);
 
-//     // Add parent category filter
-//     if (parentCategory) {
-//       if (parentCategory === 'null') {
-//         filter.parentCategory = null;
-//       } else {
-//         filter.parentCategory = parentCategory;
-//       }
-//     }
+    // Build filter object
+    const filter: any = { isactive: true };
 
-//     // Add global filter
-//     if (isGlobal !== undefined) {
-//       filter.isGlobal = isGlobal === 'true';
-//     }
+    // Add search filter
+    if (search) {
+      filter.categoryname = { $regex: search, $options: 'i' };
+    }
 
-//     // Add vendor filter
-//     if (vendor) {
-//       filter.vendor = vendor;
-//     } else if (req.user?.role === 'vendor') {
-//       // If user is vendor, show their categories + global categories
-//       filter.$or = [
-//         { vendor: req.user.id },
-//         { isGlobal: true }
-//       ];
-//     }
+    // Add parent category filter
+    if (parentCategory) {
+      if (parentCategory === 'null') {
+        filter.parentCategory = null;
+      } else {
+        filter.parentCategory = parentCategory;
+      }
+    }
 
-//     const categories = await Category.find(filter)
-//       .populate('parentCategory', 'categoryname')
-//       .populate('vendor', 'name email')
-//       .sort({ sortOrder: 1, categoryname: 1 })
-//       .skip(skip)
-//       .limit(Number(limit));
+    // Add global filter
+    if (isGlobal !== undefined) {
+      filter.isGlobal = isGlobal === 'true';
+    }
 
-//     const total = await Category.countDocuments(filter);
+    // Add vendor filter
+    if (vendor) {
+      filter.vendor = vendor;
+    } else if (user?.role === 'vendor') {
+      // If user is vendor, show their categories + global categories
+      filter.$or = [
+        { vendor: user._id },
+        { isGlobal: true }
+      ];
+    }
 
-//     res.status(200).json({
-//       success: true,
-//       data: categories,
-//       pagination: {
-//         page: Number(page),
-//         limit: Number(limit),
-//         total,
-//         pages: Math.ceil(total / Number(limit))
-//       }
-//     });
+    const categories = await Category.find(filter)
+      .populate('parentCategory', 'categoryname')
+      .populate('vendor', 'name email')
+      .sort({ sortOrder: 1, categoryname: 1 })
+      .skip(skip)
+      .limit(Number(limit));
 
-//   } catch (error) {
-//     console.error("Error fetching categories:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error"
-//     });
-//   }
-// };
+    const total = await Category.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      message: "Categories list fetch successfully",
+      data: categories,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit))
+      }
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Get category by ID
-// export const getCategoryById = async (req: Request, res: Response) => {
-//   try {
-//     const { id } = req.params;
+export const getCategoryById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
 
-//     const category = await Category.findById(id)
-//       .populate('parentCategory', 'categoryname')
-//       .populate('vendor', 'name email')
-//       .populate('subcategories', 'categoryname image isactive');
+    const category = await Category.findById(id)
+      .populate('parentCategory', 'categoryname')
+      .populate('vendor', 'name email')
+      .populate('subcategories', 'categoryname image isactive');
 
-//     if (!category) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Category not found"
-//       });
-//     }
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found"
+      });
+    }
 
-//     res.status(200).json({
-//       success: true,
-//       data: category
-//     });
+    res.status(200).json({
+      success: true,
+      message: "Category details fetch successfully",
+      data: category
+    });
 
-//   } catch (error) {
-//     console.error("Error fetching category:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error"
-//     });
-//   }
-// };
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Update category
-// export const updateCategory = async (req: Request, res: Response) => {
-//   try {
-//     const { id } = req.params;
-//     const updateData = req.body;
+export const updateCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const user = (req as any)?.user;
 
-//     // Get image URL if new image uploaded
-//     if ((req as any).file?.secure_url) {
-//       updateData.image = (req as any).file.secure_url;
-//     }
+    // Get image URL if new image uploaded
+    if ((req as any).file?.path) {
+      updateData.image = (req as any).file.path;
+    }
 
-//     const category = await Category.findById(id);
+    const category = await Category.findById(id);
 
-//     if (!category) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Category not found"
-//       });
-//     }
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found"
+      });
+    }
 
-//     // Check if user has permission to update this category
-//     if (req.user?.role === 'vendor' && category.vendor?.toString() !== req.user.id) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "You don't have permission to update this category"
-//       });
-//     }
+    // Check if user has permission to update this category
+    if (user?.role === 'vendor' && category.vendor?.toString() !== user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have permission to update this category"
+      });
+    }
 
-//     // Check if category name already exists (excluding current category)
-//     if (updateData.categoryname) {
-//       const existingCategory = await Category.findOne({
-//         categoryname: { $regex: new RegExp(`^${updateData.categoryname}$`, 'i') },
-//         _id: { $ne: id },
-//         vendor: req.user?.role === 'vendor' ? req.user.id : null
-//       });
+    // Check if category name already exists (excluding current category)
+    if (updateData.categoryName) {
+      const existingCategory = await Category.findOne({
+        categoryName: { $regex: new RegExp(`^${updateData.categoryName}$`, 'i') },
+        _id: { $ne: id },
+        vendor: user?.role === 'vendor' ? user._id : null
+      });
 
-//       if (existingCategory) {
-//         return res.status(400).json({
-//           success: false,
-//           message: "Category with this name already exists"
-//         });
-//       }
-//     }
+      if (existingCategory) {
+        return res.status(400).json({
+          success: false,
+          message: "Category with this name already exists"
+        });
+      }
+    }
 
-//     const updatedCategory = await Category.findByIdAndUpdate(
-//       id,
-//       updateData,
-//       { new: true, runValidators: true }
-//     ).populate('parentCategory', 'categoryname')
-//      .populate('vendor', 'name email');
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    ).populate('parentCategory', 'categoryname')
+     .populate('vendor', 'name email');
 
-//     res.status(200).json({
-//       success: true,
-//       message: "Category updated successfully",
-//       data: updatedCategory
-//     });
+    res.status(200).json({
+      success: true,
+      message: "Category updated successfully",
+      data: updatedCategory
+    });
 
-//   } catch (error) {
-//     console.error("Error updating category:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error"
-//     });
-//   }
-// };
+  } catch (error) {
+    console.error("Error updating category:", error);
+    next(error);
+  }
+};
 
 // Delete category
-// export const deleteCategory = async (req: Request, res: Response) => {
-//   try {
-//     const { id } = req.params;
+export const deleteCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
 
-//     const category = await Category.findById(id);
+    const user = (req as any)?.user;
 
-//     if (!category) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Category not found"
-//       });
-//     }
+    const category = await Category.findById(id);
 
-//     // Check if user has permission to delete this category
-//     if (req.user?.role === 'vendor' && category.vendor?.toString() !== req.user.id) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "You don't have permission to delete this category"
-//       });
-//     }
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found"
+      });
+    }
 
-//     // Check if category has subcategories
-//     const hasSubcategories = await Category.exists({ parentCategory: id });
-//     if (hasSubcategories) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Cannot delete category with subcategories. Please delete subcategories first."
-//       });
-//     }
+    // Check if user has permission to delete this category
+    if (user?.role === 'vendor' && category.vendor?.toString() !== user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have permission to delete this category"
+      });
+    }
 
-//     // Soft delete - set isactive to false
-//     await Category.findByIdAndUpdate(id, { isactive: false });
+    // Check if category has subcategories
+    const hasSubcategories = await Category.exists({ parentCategory: id });
+    if (hasSubcategories) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete category with subcategories. Please delete subcategories first."
+      });
+    }
 
-//     res.status(200).json({
-//       success: true,
-//       message: "Category deleted successfully"
-//     });
+    // Soft delete - set isactive to false
+    await Category.findByIdAndUpdate(id, { isactive: false });
 
-//   } catch (error) {
-//     console.error("Error deleting category:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error"
-//     });
-//   }
-// }; 
+    res.status(200).json({
+      success: true,
+      message: "Category deleted successfully"
+    });
+
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    next(error);
+  }
+}; 

@@ -2,10 +2,10 @@ import { Router } from "express";
 import { authenticateJWT } from "../middleware/authenticateJWT";
 import { 
   createCategory, 
-//   getCategories, 
-//   getCategoryById, 
-//   updateCategory, 
-//   deleteCategory 
+  getCategories, 
+  getCategoryById, 
+  updateCategory, 
+  deleteCategory 
 } from "../controllers/category.controller";
 import { authorizeRoles } from "../middleware/authorizeRoles";
 import cloudinaryMulter from "../middleware/cloudinaryMulter";
@@ -16,8 +16,8 @@ import getCloudinaryMulter from "../middleware/cloudinaryMulter";
 const router = Router();
 
 // Public routes
-// router.get("/categories-list", validateCategoryQuery, validateRequest, getCategories);
-// router.get("/category/:id", getCategoryById);
+router.get("/categories-list", validateCategoryQuery, validateRequest, getCategories);
+router.get("/category/:id", getCategoryById);
 
 // Protected routes (require authentication)
 router.post(
@@ -30,22 +30,22 @@ router.post(
   createCategory
 );
 
-// router.patch(
-//   "/update-category/:id",
-//   authenticateJWT,
-//   authorizeRoles(["vendor", "admin"]),
-//   validateCategory,
-//   validateRequest,
-//   cloudinaryMulter.single("image"),
-//   updateCategory
-// );
+router.patch(
+  "/update-category/:id",
+  authenticateJWT,
+  authorizeRoles(["vendor", "admin"]),
+  validateCategory,
+  validateRequest,
+  cloudinaryMulter("categories").single("image"),
+  updateCategory
+);
 
-// router.delete(
-//   "/delete-category/:id",
-//   authenticateJWT,
-//   authorizeRoles(["vendor", "admin"]),
-//   deleteCategory
-// );
+router.delete(
+  "/delete-category/:id",
+  authenticateJWT,
+  authorizeRoles(["vendor", "admin"]),
+  deleteCategory
+);
 
 export default router;
 
