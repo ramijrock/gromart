@@ -88,7 +88,7 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
 
     // Add search filter
     if (search) {
-      filter.categoryname = { $regex: search, $options: 'i' };
+      filter.categoryName = { $regex: search, $options: 'i' };
     }
 
     // Add global filter
