@@ -7,7 +7,6 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
     const {
       categoryName,
       description,
-      parentCategory,
       isGlobal = true,
       sortOrder = 0,
       metaTitle,
@@ -49,18 +48,6 @@ export const createCategory = async (req: Request, res: Response, next: NextFunc
       metaDescription
     };
 
-    // Add parent category if provided
-    if (parentCategory) {
-      const parentExists = await Category.findById(parentCategory);
-      if (!parentExists) {
-        return res.status(400).json({
-          success: false,
-          message: "Parent category not found"
-        });
-      }
-      categoryData.parentCategory = parentCategory;
-    }
-
     // Add vendor if user is a vendor
     if (user?.role === 'vendor') {
       categoryData.vendor = user._id;
@@ -88,7 +75,6 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
       page = 1,
       limit = 10,
       search,
-      parentCategory,
       isGlobal,
       vendor
     } = req.query;
@@ -103,15 +89,6 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
     // Add search filter
     if (search) {
       filter.categoryname = { $regex: search, $options: 'i' };
-    }
-
-    // Add parent category filter
-    if (parentCategory) {
-      if (parentCategory === 'null') {
-        filter.parentCategory = null;
-      } else {
-        filter.parentCategory = parentCategory;
-      }
     }
 
     // Add global filter
@@ -131,7 +108,6 @@ export const getCategories = async (req: Request, res: Response, next: NextFunct
     }
 
     const categories = await Category.find(filter)
-      .populate('parentCategory', 'categoryname')
       .populate('vendor', 'name email')
       .sort({ sortOrder: 1, categoryname: 1 })
       .skip(skip)
@@ -162,9 +138,7 @@ export const getCategoryById = async (req: Request, res: Response, next: NextFun
     const { id } = req.params;
 
     const category = await Category.findById(id)
-      .populate('parentCategory', 'categoryname')
-      .populate('vendor', 'name email')
-      .populate('subcategories', 'categoryname image isactive');
+      .populate('vendor', 'name email');
 
     if (!category) {
       return res.status(404).json({
@@ -233,8 +207,7 @@ export const updateCategory = async (req: Request, res: Response, next: NextFunc
       id,
       updateData,
       { new: true, runValidators: true }
-    ).populate('parentCategory', 'categoryname')
-     .populate('vendor', 'name email');
+    ).populate('vendor', 'name email');
 
     res.status(200).json({
       success: true,
@@ -269,15 +242,6 @@ export const deleteCategory = async (req: Request, res: Response, next: NextFunc
       return res.status(403).json({
         success: false,
         message: "You don't have permission to delete this category"
-      });
-    }
-
-    // Check if category has subcategories
-    const hasSubcategories = await Category.exists({ parentCategory: id });
-    if (hasSubcategories) {
-      return res.status(400).json({
-        success: false,
-        message: "Cannot delete category with subcategories. Please delete subcategories first."
       });
     }
 

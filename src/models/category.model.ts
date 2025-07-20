@@ -7,7 +7,6 @@ export interface ICategory extends Document {
   isactive: boolean;
   image: string;
   icon?: string;
-  parentCategory?: mongoose.Types.ObjectId;
   vendor?: mongoose.Types.ObjectId; // For vendor-specific categories
   isGlobal: boolean; // Whether this category is available to all vendors
   sortOrder: number;
@@ -41,11 +40,6 @@ const CategorySchema: Schema = new Schema({
   },
   icon: { 
     type: String 
-  },
-  parentCategory: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Category',
-    default: null
   },
   vendor: { 
     type: Schema.Types.ObjectId, 
@@ -83,16 +77,8 @@ const CategorySchema: Schema = new Schema({
 
 // Indexes for better query performance
 CategorySchema.index({ vendor: 1, isGlobal: 1 });
-CategorySchema.index({ parentCategory: 1 });
 CategorySchema.index({ slug: 1 });
 CategorySchema.index({ isactive: 1, sortOrder: 1 });
-
-// Virtual for getting subcategories
-CategorySchema.virtual('subcategories', {
-  ref: 'Category',
-  localField: '_id',
-  foreignField: 'parentCategory'
-});
 
 // Ensure virtuals are included when converting to JSON
 CategorySchema.set('toJSON', { virtuals: true });

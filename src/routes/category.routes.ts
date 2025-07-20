@@ -8,10 +8,9 @@ import {
   deleteCategory 
 } from "../controllers/category.controller";
 import { authorizeRoles } from "../middleware/authorizeRoles";
-import cloudinaryMulter from "../middleware/cloudinaryMulter";
+import getCloudinaryMulter from "../middleware/cloudinaryMulter";
 import { validateCategory, validateCategoryQuery } from "../middleware/validation/category.validation";
 import { validateRequest } from "../middleware/validate.request";
-import getCloudinaryMulter from "../middleware/cloudinaryMulter";
 
 const router = Router();
 
@@ -36,7 +35,7 @@ router.patch(
   authorizeRoles(["vendor", "admin"]),
   validateCategory,
   validateRequest,
-  cloudinaryMulter("categories").single("image"),
+  getCloudinaryMulter("categories").single("image"),
   updateCategory
 );
 

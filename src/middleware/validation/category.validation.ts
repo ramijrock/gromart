@@ -3,7 +3,7 @@ import { body, query } from "express-validator";
 export const validateCategory = [
     body('categoryName')
         .trim()
-        .isEmpty()
+        .notEmpty()
         .withMessage('Category name is required!'),
     
     body('description')
@@ -11,11 +11,6 @@ export const validateCategory = [
         .trim()
         .isLength({ max: 500 })
         .withMessage('Description must be less than 500 characters'),
-    
-    body('parentCategory')
-        .optional()
-        .isMongoId()
-        .withMessage('Parent category must be a valid MongoDB ObjectId'),
     
     body('isGlobal')
         .optional()
@@ -56,11 +51,6 @@ export const validateCategoryQuery = [
         .trim()
         .isLength({ max: 100 })
         .withMessage('Search term must be less than 100 characters'),
-    
-    query('parentCategory')
-        .optional()
-        .isMongoId()
-        .withMessage('Parent category must be a valid MongoDB ObjectId'),
     
     query('isGlobal')
         .optional()
