@@ -65,7 +65,7 @@ export const getSubCategories = async (req: Request, res: Response, next: NextFu
 
     // Add search filter
     if (search) {
-      filter.categoryName = { $regex: search, $options: 'i' };
+      filter.subCategoryName = { $regex: search, $options: 'i' };
     }
 
     // Add vendor filter
