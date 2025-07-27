@@ -1,5 +1,5 @@
 import express from 'express';
-import { addSubCategory, getSubCategories } from '../controllers/subcategory.controller';
+import { addSubCategory, deleteSubCategory, getSubCategories } from '../controllers/subcategory.controller';
 import { authenticateJWT } from '../middleware/authenticateJWT';
 import { authorizeRoles } from '../middleware/authorizeRoles';
 import { validateAddSubCategory, validateSubCategoryQuery } from '../middleware/validation/subCategory.validation';
@@ -14,5 +14,8 @@ router.get("/list", validateSubCategoryQuery, validateRequest, getSubCategories)
 
 // Add subcategory
 router.post('/add', authenticateJWT, authorizeRoles(["admin"]), getCloudinaryMulter("subCategory").single('image'), validateAddSubCategory, validateRequest, addSubCategory);
+
+// Delete subcategory
+router.delete('/delete/:id', authenticateJWT, authorizeRoles(["admin"]), deleteSubCategory);
 
 export default router; 

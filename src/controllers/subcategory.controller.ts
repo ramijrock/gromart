@@ -103,3 +103,40 @@ export const getSubCategories = async (req: Request, res: Response, next: NextFu
     next(error);
   }
 };
+
+// Delete category
+export const deleteSubCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+
+    const user = (req as any)?.user;
+
+    const subCategory = await SubCategory.findById(id);
+
+    if (!subCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Sub Category not found"
+      });
+    }
+
+    // Check if user has permission to delete this category
+    if (user?.role === 'vendor' && subCategory.vendor?.toString() !== user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have permission to delete this sub category"
+      });
+    }
+
+    // Soft delete - set isactive to false
+    await SubCategory.findByIdAndUpdate(id, { isactive: false });
+
+    res.status(200).json({
+      success: true,
+      message: "Sub-Category deleted successfully"
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
