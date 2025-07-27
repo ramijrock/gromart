@@ -46,3 +46,60 @@ export const addSubCategory = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 }; 
+
+export const getSubCategories = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      vendor
+    } = req.query;
+
+    const user = (req as any)?.user;
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    // Build filter object
+    const filter: any = { isactive: true };
+
+    // Add search filter
+    if (search) {
+      filter.categoryName = { $regex: search, $options: 'i' };
+    }
+
+    // Add vendor filter
+    if (vendor) {
+      filter.vendor = vendor;
+    } else if (user?.role === 'vendor') {
+      // If user is vendor, show their categories + global categories
+      filter.$or = [
+        { vendor: user._id },
+        { isGlobal: true }
+      ];
+    }
+
+    const subCategories = await SubCategory.find(filter)
+      .populate('vendor', 'name email')
+      .sort({ sortOrder: 1, categoryname: 1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    const total = await SubCategory.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      message: "Sub-Categories list fetch successfully",
+      data: subCategories,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit))
+      }
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
