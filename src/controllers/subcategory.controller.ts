@@ -108,7 +108,7 @@ export const getSubCategories = async (req: Request, res: Response, next: NextFu
 export const updateSubCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
+    const updateData = { ...req.body };
     const user = (req as any)?.user;
 
     // Get image URL if new image uploaded

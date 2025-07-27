@@ -13,7 +13,15 @@ router.get("/list", validateSubCategoryQuery, validateRequest, getSubCategories)
 // router.get("/sub-category/:id", getSubCategoryById);
 
 // Add subcategory
-router.post('/add', authenticateJWT, authorizeRoles(["admin"]), getCloudinaryMulter("subCategory").single('image'), validateAddSubCategory, validateRequest, addSubCategory);
+router.post(
+    '/add', 
+    authenticateJWT, 
+    authorizeRoles(["admin"]), 
+    getCloudinaryMulter("subCategory").single('image'), 
+    validateAddSubCategory, 
+    validateRequest, 
+    addSubCategory
+);
 
 //Update Sub Category
 router.patch(
@@ -24,7 +32,7 @@ router.patch(
     validateAddSubCategory,
     validateRequest,
     updateSubCategory
-  ); 
+);
 
 // Delete subcategory
 router.delete('/delete/:id', authenticateJWT, authorizeRoles(["admin"]), deleteSubCategory);
