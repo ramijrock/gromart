@@ -104,7 +104,70 @@ export const getSubCategories = async (req: Request, res: Response, next: NextFu
   }
 };
 
-// Delete category
+// Update Sub Category
+export const updateSubCategory = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const user = (req as any)?.user;
+
+    // Get image URL if new image uploaded
+    if ((req as any).file?.path) {
+      updateData.image = (req as any).file.path;
+    }
+
+    const subCategory = await SubCategory.findById(id);
+
+    if (!subCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Sub category not found"
+      });
+    }
+
+    // Check if user has permission to update this category
+    if (user?.role === 'vendor' && subCategory.vendor?.toString() !== user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have permission to update this sub category"
+      });
+    }
+
+    // Check if category name already exists (excluding current category)
+    if (updateData.subCategoryName) {
+      const existingSubCategory = await SubCategory.findOne({
+        subCategoryName: { $regex: new RegExp(`^${updateData.subCategoryName}$`, 'i') },
+        _id: { $ne: id },
+        vendor: user?.role === 'vendor' ? user._id : null
+      });
+
+      if (existingSubCategory) {
+        return res.status(400).json({
+          success: false,
+          message: "Sub category with this name already exists"
+        });
+      }
+    }
+
+    const updatedSubCategory = await SubCategory.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    ).populate('vendor', 'name email');
+
+    res.status(200).json({
+      success: true,
+      message: "Sub category updated successfully",
+      data: updatedSubCategory
+    });
+
+  } catch (error) {
+    console.error("Error updating category:", error);
+    next(error);
+  }
+};
+
+// Delete Sub Category
 export const deleteSubCategory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
