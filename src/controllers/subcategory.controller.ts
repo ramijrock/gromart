@@ -8,18 +8,29 @@ export const addSubCategory = async (req: Request, res: Response, next: NextFunc
       subCategoryName,
       parentCategory,
       vendor,
-      isGlobal,
       isactive,
-      image,
       sortOrder
     } = req.body;
+    
+    const image = (req.file as any)?.location || (req.file as any)?.path;
+
+    // Check if subcategory with same name already exists
+    const existingSubCategory = await SubCategory.findOne({ 
+      subCategoryName: { $regex: new RegExp(`^${subCategoryName}$`, 'i') } 
+    });
+
+    if (existingSubCategory) {
+      return res.status(400).json({
+        success: false,
+        message: 'Sub-Category with this name already exists!'
+      });
+    }
 
     // Create new subcategory
     const subcategory = new SubCategory({
       subCategoryName,
       parentCategory,
       vendor: vendor || null,
-      isGlobal: typeof isGlobal === 'boolean' ? isGlobal : true,
       isactive: typeof isactive === 'boolean' ? isactive : true,
       image,
       sortOrder: typeof sortOrder === 'number' ? sortOrder : 0

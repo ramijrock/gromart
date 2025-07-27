@@ -3,16 +3,13 @@ import { body } from "express-validator";
 export const validateAddSubCategory = [
     body('subCategoryName')
         .trim()
-        .isEmpty()
+        .notEmpty()
         .withMessage('Sub-Category name is required!'),
     body('parentCategory')
         .trim()
-        .isEmpty()
-        .withMessage('Parent category is required'),
-    body('isGlobal')
-        .optional()
-        .isBoolean()
-        .withMessage('isGlobal must be a boolean value'),
+        .notEmpty()
+        .isMongoId()
+        .withMessage('Category ID must be a valid Mongo ID'),
     body('isactive')
         .optional()
         .isBoolean()
