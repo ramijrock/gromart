@@ -47,8 +47,11 @@ export const validateProduct = [
         .optional()
         .custom((value) => {
           if (value === undefined || value === '') return true;
+          if (value === null) return true;
           const num = Number(value);
-          return Number.isInteger(num) && num >= 0;
+          const isValid = !isNaN(num) && Number.isInteger(num) && num >= 0;
+          console.log('stockQty validation - num:', num, 'isValid:', isValid);
+          return isValid;
         })
         .withMessage('Stock quantity must be a non-negative integer'),
     
@@ -153,8 +156,11 @@ export const validateProductUpdate = [
         .optional()
         .custom((value) => {
           if (value === undefined || value === '') return true;
+          if (value === null) return true;
           const num = Number(value);
-          return Number.isInteger(num) && num >= 0;
+          const isValid = !isNaN(num) && Number.isInteger(num) && num >= 0;
+          console.log('stockQty update validation - num:', num, 'isValid:', isValid);
+          return isValid;
         })
         .withMessage('Stock quantity must be a non-negative integer'),
     
@@ -292,9 +298,13 @@ export const validateStockUpdate = [
         .withMessage('Product ID must be a valid MongoDB ObjectId'),
     
     body('stockQty')
+        .notEmpty()
+        .withMessage('Stock quantity is required')
         .custom((value) => {
           const num = Number(value);
-          return Number.isInteger(num) && num >= 0;
+          const isValid = !isNaN(num) && Number.isInteger(num) && num >= 0;
+          console.log('stockQty update validation - num:', num, 'isValid:', isValid);
+          return isValid;
         })
         .withMessage('Stock quantity must be a non-negative integer')
 ]; 
