@@ -18,6 +18,7 @@ export interface IProduct extends Document {
   ratings: { average: number; count: number };
   isFeatured: boolean;
   isDeleted: boolean;
+  totalSold: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -104,6 +105,10 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    totalSold: {
+      type: Number,
+      default: 0,
+    }
   },
   { timestamps: true }
 );
