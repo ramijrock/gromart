@@ -2,9 +2,10 @@ import { body, query, param } from "express-validator";
 
 export const validateProduct = [
     body('name')
-        .trim()
-        .isEmpty()
-        .withMessage('Product name is required!'),
+        .notEmpty()
+        .withMessage('Product name is required!')
+        .isLength({ min: 2, max: 100 })
+        .withMessage('Product name must be between 2 and 100 characters'),
     
     body('description')
         .optional()
@@ -13,18 +14,27 @@ export const validateProduct = [
         .withMessage('Description must be less than 1000 characters'),
     
     body('price')
-        .isEmpty()
-        .withMessage('Price is required'),
+        .notEmpty()
+        .withMessage('Price is required')
+        .custom((value) => {
+          const num = Number(value);
+          return !isNaN(num) && num >= 0;
+        })
+        .withMessage('Price must be a positive number'),
     
     body('discount')
         .optional()
-        .isFloat({ min: 0, max: 100 })
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          const num = Number(value);
+          return !isNaN(num) && num >= 0 && num <= 100;
+        })
         .withMessage('Discount must be between 0 and 100'),
     
     body('categoryId')
-        .trim()
-        .isEmpty()
+        .notEmpty()
         .withMessage('Category ID is required')
+        .bail()
         .isMongoId()
         .withMessage('Category ID must be a valid MongoDB ObjectId'),
     
@@ -35,57 +45,65 @@ export const validateProduct = [
     
     body('stockQty')
         .optional()
-        .isInt({ min: 0 })
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          const num = Number(value);
+          return Number.isInteger(num) && num >= 0;
+        })
         .withMessage('Stock quantity must be a non-negative integer'),
     
     body('unit')
-        .isEmpty()
+        .notEmpty()
         .withMessage('Unit is required')
         .isIn(['kg', 'g', 'liter', 'ml', 'pcs', 'box', 'packet'])
         .withMessage('Unit must be one of: kg, g, liter, ml, pcs, box, packet'),
     
     body('isAvailable')
         .optional()
-        .isBoolean()
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          return value === 'true' || value === 'false' || value === true || value === false;
+        })
         .withMessage('isAvailable must be a boolean value'),
     
     body('tags')
         .optional()
-        .isArray()
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          if (typeof value === 'string') {
+            try {
+              const parsed = JSON.parse(value);
+              return Array.isArray(parsed);
+            } catch {
+              return false;
+            }
+          }
+          return Array.isArray(value);
+        })
         .withMessage('Tags must be an array'),
-    
-    body('tags.*')
-        .optional()
-        .isString()
-        .trim()
-        .isLength({ max: 50 })
-        .withMessage('Each tag must be less than 50 characters'),
     
     body('variants')
         .optional()
-        .isArray()
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          if (typeof value === 'string') {
+            try {
+              const parsed = JSON.parse(value);
+              return Array.isArray(parsed);
+            } catch {
+              return false;
+            }
+          }
+          return Array.isArray(value);
+        })
         .withMessage('Variants must be an array'),
-    
-    body('variants.*.name')
-        .optional()
-        .isString()
-        .trim()
-        .notEmpty()
-        .withMessage('Variant name is required'),
-    
-    body('variants.*.price')
-        .optional()
-        .isFloat({ min: 0 })
-        .withMessage('Variant price must be a positive number'),
-    
-    body('variants.*.stockQty')
-        .optional()
-        .isInt({ min: 0 })
-        .withMessage('Variant stock quantity must be a non-negative integer'),
     
     body('isFeatured')
         .optional()
-        .isBoolean()
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          return value === 'true' || value === 'false' || value === true || value === false;
+        })
         .withMessage('isFeatured must be a boolean value')
 ];
 
@@ -106,12 +124,19 @@ export const validateProductUpdate = [
     
     body('price')
         .optional()
-        .isFloat({ min: 0 })
+        .custom((value) => {
+          const num = Number(value);
+          return !isNaN(num) && num >= 0;
+        })
         .withMessage('Price must be a positive number'),
     
     body('discount')
         .optional()
-        .isFloat({ min: 0, max: 100 })
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          const num = Number(value);
+          return !isNaN(num) && num >= 0 && num <= 100;
+        })
         .withMessage('Discount must be between 0 and 100'),
     
     body('categoryId')
@@ -126,7 +151,11 @@ export const validateProductUpdate = [
     
     body('stockQty')
         .optional()
-        .isInt({ min: 0 })
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          const num = Number(value);
+          return Number.isInteger(num) && num >= 0;
+        })
         .withMessage('Stock quantity must be a non-negative integer'),
     
     body('unit')
@@ -136,46 +165,50 @@ export const validateProductUpdate = [
     
     body('isAvailable')
         .optional()
-        .isBoolean()
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          return value === 'true' || value === 'false' || value === true || value === false;
+        })
         .withMessage('isAvailable must be a boolean value'),
     
     body('tags')
         .optional()
-        .isArray()
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          if (typeof value === 'string') {
+            try {
+              const parsed = JSON.parse(value);
+              return Array.isArray(parsed);
+            } catch {
+              return false;
+            }
+          }
+          return Array.isArray(value);
+        })
         .withMessage('Tags must be an array'),
-    
-    body('tags.*')
-        .optional()
-        .isString()
-        .trim()
-        .isLength({ max: 50 })
-        .withMessage('Each tag must be less than 50 characters'),
     
     body('variants')
         .optional()
-        .isArray()
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          if (typeof value === 'string') {
+            try {
+              const parsed = JSON.parse(value);
+              return Array.isArray(parsed);
+            } catch {
+              return false;
+            }
+          }
+          return Array.isArray(value);
+        })
         .withMessage('Variants must be an array'),
-    
-    body('variants.*.name')
-        .optional()
-        .isString()
-        .trim()
-        .notEmpty()
-        .withMessage('Variant name is required'),
-    
-    body('variants.*.price')
-        .optional()
-        .isFloat({ min: 0 })
-        .withMessage('Variant price must be a positive number'),
-    
-    body('variants.*.stockQty')
-        .optional()
-        .isInt({ min: 0 })
-        .withMessage('Variant stock quantity must be a non-negative integer'),
     
     body('isFeatured')
         .optional()
-        .isBoolean()
+        .custom((value) => {
+          if (value === undefined || value === '') return true;
+          return value === 'true' || value === 'false' || value === true || value === false;
+        })
         .withMessage('isFeatured must be a boolean value')
 ];
 
@@ -259,6 +292,9 @@ export const validateStockUpdate = [
         .withMessage('Product ID must be a valid MongoDB ObjectId'),
     
     body('stockQty')
-        .isInt({ min: 0 })
+        .custom((value) => {
+          const num = Number(value);
+          return Number.isInteger(num) && num >= 0;
+        })
         .withMessage('Stock quantity must be a non-negative integer')
 ]; 

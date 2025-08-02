@@ -21,6 +21,26 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
       isFeatured = false
     } = req.body;
 
+    // Parse tags and variants if they come as strings from multipart form data
+    let parsedTags = tags;
+    let parsedVariants = variants;
+    
+    if (typeof tags === 'string' && tags) {
+      try {
+        parsedTags = JSON.parse(tags);
+      } catch (error) {
+        parsedTags = [];
+      }
+    }
+    
+    if (typeof variants === 'string' && variants) {
+      try {
+        parsedVariants = JSON.parse(variants);
+      } catch (error) {
+        parsedVariants = [];
+      }
+    }
+
     const user = (req as any).user;
 
     // Get image URLs from cloudinary upload
@@ -80,12 +100,12 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
       discount,
       categoryId,
       subCategoryId,
-      vendorId: user._id,
+      vendorId: user?.role == "vendor" ? user._id : null,
       stockQty,
       unit,
       isAvailable,
-      tags,
-      variants,
+      tags: parsedTags,
+      variants: parsedVariants,
       isFeatured
     };
 
@@ -286,6 +306,23 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
         alt: req.body.name || product.name
       }));
       req.body.images = newImages;
+    }
+
+    // Parse tags and variants if they come as strings from multipart form data
+    if (req.body.tags && typeof req.body.tags === 'string') {
+      try {
+        req.body.tags = JSON.parse(req.body.tags);
+      } catch (error) {
+        req.body.tags = [];
+      }
+    }
+    
+    if (req.body.variants && typeof req.body.variants === 'string') {
+      try {
+        req.body.variants = JSON.parse(req.body.variants);
+      } catch (error) {
+        req.body.variants = [];
+      }
     }
 
     // Validate category if being updated

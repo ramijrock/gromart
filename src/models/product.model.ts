@@ -65,7 +65,7 @@ const productSchema = new mongoose.Schema(
     vendorId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
     stockQty: {
       type: Number,

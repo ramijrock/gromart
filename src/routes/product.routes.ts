@@ -34,9 +34,9 @@ router.post(
   "/add-product",
   authenticateJWT,
   authorizeRoles(["vendor", "admin"]),
+  getCloudinaryMulter("products").array("images", 5), // Allow up to 5 images
   validateProduct,
   validateRequest,
-  getCloudinaryMulter("products").array("images", 5), // Allow up to 5 images
   createProduct
 );
 
@@ -45,9 +45,9 @@ router.patch(
   authenticateJWT,
   authorizeRoles(["vendor", "admin"]),
   validateProductId,
+  getCloudinaryMulter("products").array("images", 5),
   validateProductUpdate,
   validateRequest,
-  getCloudinaryMulter("products").array("images", 5),
   updateProduct
 );
 
