@@ -1,4 +1,4 @@
-import mongoose, { Document, Types } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface IProduct extends Document {
   name: string;
@@ -7,7 +7,7 @@ export interface IProduct extends Document {
   price: number;
   discount: number;
   finalPrice: number;
-  categoryId: Types.ObjectId;
+  categoryId: mongoose.Types.ObjectId;
   subCategoryId?: Types.ObjectId;
   vendorId: Types.ObjectId;
   stockQty: number;
@@ -29,6 +29,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      index: true,
     },
     description: {
       type: String,
@@ -53,17 +54,17 @@ const productSchema = new mongoose.Schema(
       type: Number,
     },
     categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
     subCategoryId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "SubCategory",
     },
     vendorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Vendor",
+      type: Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
     stockQty: {
