@@ -128,7 +128,6 @@ const vendorSchema = new Schema<IVendor>(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true,
     },
     businessName: {
       type: String,

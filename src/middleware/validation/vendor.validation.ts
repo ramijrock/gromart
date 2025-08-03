@@ -53,12 +53,10 @@ export const createVendorValidation = [
     .withMessage("Valid 6-digit postal code is required"),
   
   body("latitude")
-    .optional()
     .isFloat({ min: -90, max: 90 })
     .withMessage("Valid latitude is required"),
   
   body("longitude")
-    .optional()
     .isFloat({ min: -180, max: 180 })
     .withMessage("Valid longitude is required"),
 ];
