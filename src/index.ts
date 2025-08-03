@@ -41,6 +41,9 @@ app.use(
 // Serve uploads folder as static
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, "../public")));
+
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   // Log the full error object
   console.error("Error:", typeof err === "object" ? JSON.stringify(err, null, 2) : err);
@@ -75,7 +78,7 @@ app.use("/product", productRoute);
 
 // Default route
 app.get("/", (req: Request, res: Response) => {
-    res.send("Hello, welcome to GroMart API!");
+    res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 // Start the server
