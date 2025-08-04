@@ -61,6 +61,7 @@ export const createVendor = async (req: Request, res: Response) => {
       isActive: true,
       isApproved: false,
       approvalStatus: "pending",
+      kycStep: "business_details",
     });
 
     await vendor.save();
