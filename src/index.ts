@@ -14,6 +14,7 @@ import categoryRoute from "./routes/category.routes";
 import subCategoryRoute from "./routes/subcategory.routes";
 import productRoute from "./routes/product.routes";
 import vendorRoute from "./routes/vendor.routes";
+import cartRoute from "./routes/cart.routes";
 
 // Connect to MongoDB Database with better error handling
 connectDB()
@@ -78,6 +79,7 @@ app.use("/category", categoryRoute);
 app.use("/sub-category", subCategoryRoute);
 app.use("/product", productRoute);
 app.use("/vendor", vendorRoute);
+app.use("/cart", cartRoute);
 
 // Default route
 app.get("/", (req: Request, res: Response) => {
