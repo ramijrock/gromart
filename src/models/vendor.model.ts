@@ -87,6 +87,8 @@ export interface IVendor extends Document {
   isApproved: boolean;
   approvalStatus: "pending" | "approved" | "rejected" | "suspended";
   rejectionReason?: string;
+  isKyc: boolean;
+  kycStep: "not_started" | "business_details" | "documents" | "bank_details" | "completed";
   
   // Commission and Fees
   commissionRate: number; // percentage
@@ -276,6 +278,12 @@ const vendorSchema = new Schema<IVendor>(
       default: "pending",
     },
     rejectionReason: { type: String },
+    isKyc: { type: Boolean, default: false },
+    kycStep: {
+      type: String,
+      enum: ["not_started", "business_details", "documents", "bank_details", "completed"],
+      default: "not_started",
+    },
     
     // Commission and Fees
     commissionRate: { type: Number, default: 10 }, // 10%

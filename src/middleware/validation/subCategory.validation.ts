@@ -29,6 +29,11 @@ export const validateSubCategoryQuery = [
         .optional()
         .isInt({ min: 1 })
         .withMessage('Page must be a positive number'),
+
+    query('categoryId')
+        .optional()
+        .isMongoId()
+        .withMessage('Category ID must be a valid Mongo ID'),
     
     query('limit')
         .optional()

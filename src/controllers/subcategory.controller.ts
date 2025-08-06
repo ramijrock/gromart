@@ -53,7 +53,8 @@ export const getSubCategories = async (req: Request, res: Response, next: NextFu
       page = 1,
       limit = 10,
       search,
-      vendor
+      vendor,
+      categoryId
     } = req.query;
 
     const user = (req as any)?.user;
@@ -66,6 +67,11 @@ export const getSubCategories = async (req: Request, res: Response, next: NextFu
     // Add search filter
     if (search) {
       filter.subCategoryName = { $regex: search, $options: 'i' };
+    }
+
+    // Add category filter
+    if (categoryId) {
+      filter.parentCategory = categoryId;
     }
 
     // Add vendor filter
