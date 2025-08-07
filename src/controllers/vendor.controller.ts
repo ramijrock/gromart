@@ -66,8 +66,8 @@ export const createVendor = async (req: Request, res: Response) => {
 
     await vendor.save();
 
-    // Update user role to vendor
-    await User.findByIdAndUpdate(userId, { role: "vendor" });
+    // Update user role to vendor and onboardingStep
+    await User.findByIdAndUpdate(userId, { role: "vendor", onboardingStep: "register" });
 
     res.status(201).json({
       success: true,

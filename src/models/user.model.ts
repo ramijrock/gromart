@@ -15,6 +15,8 @@ export interface IUser extends Document {
   longitude?: number;
   pin?: number;
   otp?: string;
+  onboardingStep?: "pending" | "register" | "complete";
+  isKyc?: boolean;
   role?: "customer" | "vendor" | "admin";
 }
 
@@ -34,6 +36,12 @@ const userSchema = new Schema<IUser>(
     longitude: { type: Number },
     pin: { type: Number },
     otp: { type: String },
+    onboardingStep: {
+      type: String,
+      enum: ["pending", "register", "complete"],
+      default: "pending",
+    },
+    isKyc: { type: Boolean, default: false },
     role: {
       type: String,
       enum: ["customer", "vendor", "admin"],
