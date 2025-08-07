@@ -27,11 +27,13 @@ const app = express();
 const PORT = process.env.PORT || 8080; // Use port from environment variables or default to 8080
 
 // Initialize Cors
-// app.use(cors({
-//     origin: "http://localhost:3000",
-//     credentials: true,
-// }));
-app.use(cors());
+app.use(cors({
+    origin: [
+      "http://localhost:3000",
+      "https://gromart-backend.onrender.com"
+    ],
+    credentials: true,
+}));
 
 // Middleware to parse JSON and URL-encoded request bodies
 app.use(bodyParser.json());
