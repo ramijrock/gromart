@@ -55,8 +55,7 @@ const CategorySchema: Schema = new Schema({
     default: 0 
   },
   slug: { 
-    type: String, 
-    unique: true,
+    type: String,
     lowercase: true,
     trim: true
   },
@@ -77,7 +76,7 @@ const CategorySchema: Schema = new Schema({
 
 // Indexes for better query performance
 CategorySchema.index({ vendor: 1, isGlobal: 1 });
-CategorySchema.index({ slug: 1 });
+CategorySchema.index({ slug: 1, isactive: 1 }, {unique: true});
 CategorySchema.index({ isactive: 1, sortOrder: 1 });
 
 // Ensure virtuals are included when converting to JSON
