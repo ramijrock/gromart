@@ -2,7 +2,7 @@ import express from 'express';
 import { addSubCategory, deleteSubCategory, getSubCategories, updateSubCategory } from '../controllers/subcategory.controller';
 import { authenticateJWT } from '../middleware/authenticateJWT';
 import { authorizeRoles } from '../middleware/authorizeRoles';
-import { validateAddSubCategory, validateSubCategoryQuery } from '../middleware/validation/subCategory.validation';
+import { validateAddSubCategory, validateSubCategoryQuery, validateUpdateSubCategory } from '../middleware/validation/subCategory.validation';
 import { validateRequest } from '../middleware/validate.request';
 import getCloudinaryMulter from '../middleware/cloudinaryMulter';
 
@@ -29,7 +29,7 @@ router.patch(
     authenticateJWT,
     authorizeRoles(["admin"]),
     getCloudinaryMulter("subCategory").single("image"),
-    validateAddSubCategory,
+    validateUpdateSubCategory,
     validateRequest,
     updateSubCategory
 );

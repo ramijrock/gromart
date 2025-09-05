@@ -139,6 +139,8 @@ export const updateSubCategory = async (req: Request, res: Response, next: NextF
       });
     }
 
+    
+
     // Check if category name already exists (excluding current category)
     if (updateData.subCategoryName) {
       const existingSubCategory = await SubCategory.findOne({

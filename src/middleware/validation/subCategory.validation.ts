@@ -24,6 +24,30 @@ export const validateAddSubCategory = [
         .withMessage('Vendor must be a valid Mongo ID'),
 ];
 
+export const validateUpdateSubCategory = [
+    body("subCategoryName")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("Sub-Category name cannot be empty if provided"),
+    body("parentCategory")
+      .optional()
+      .isMongoId()
+      .withMessage("Category ID must be a valid Mongo ID"),
+    body("isactive")
+      .optional()
+      .isBoolean()
+      .withMessage("isactive must be a boolean"),
+    body("sortOrder")
+      .optional()
+      .isInt({ min: 0 })
+      .withMessage("sortOrder must be a non-negative integer"),
+    body("vendor")
+      .optional()
+      .isMongoId()
+      .withMessage("Vendor must be a valid Mongo ID"),
+  ];
+
 export const validateSubCategoryQuery = [
     query('page')
         .optional()
