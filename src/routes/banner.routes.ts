@@ -20,16 +20,6 @@ router.post(
   validateAddBanner,
   validateRequest,
   getCloudinaryMulter("banners").single("image"),
-  // (req, res, next) => {
-  //   cloudinaryMulter.single("image")(req, res, function (err) {
-  //     if (err) {
-  //       console.log("error==========>", JSON.stringify(err));
-  //       // This will forward the error to your error handler
-  //       return next(err);
-  //     }
-  //     next();
-  //   });
-  // },
   addBanner
 );
 

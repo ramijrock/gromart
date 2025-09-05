@@ -69,18 +69,18 @@ export const updateBanner = async (
 
     // Prepare the update object with sanitized data
     const updateData: Record<string, any> = {
-      title: title.trim(),
+      title: title?.trim(),
       link: link?.trim(),
       description: description?.trim(),
       startDate: startDate ? new Date(startDate) : undefined,
       endDate: endDate ? new Date(endDate) : undefined,
-      deviceType: deviceType.trim(),
+      deviceType: deviceType?.trim(),
       updatedAt: new Date()
     };
 
     // Add imageUrl only if a new file is uploaded
     if (req.file) {
-      updateData.image = file;
+      updateData.image = file?.path;
     }
 
     // Update the banner in the database
